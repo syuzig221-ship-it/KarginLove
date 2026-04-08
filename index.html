@@ -147,56 +147,68 @@
 </div>
 
 <script>
-    // =====================================================
-    // ⚠️ ԱՅՍ ՏԵՂՈՒՄ ՏԵՂԱԴՐԵՔ ՁԵՐ ՎԻԴԵՈՆԵՐԻ ԱՆՈՒՆՆԵՐԸ ⚠️
-    // =====================================================
+    const videoElem = document.getElementById('reactionVideo');
+    const resetBtn = document.getElementById('resetBtn');
+    const answerBtns = document.querySelectorAll('.answer-btn');
     
-const VIDEO_URLS = {
-    yes: "videos/hai_vd.mp4",
-    no: "videos/che_vd.mp4",
-    crazy: "videos/chgitem_vd.mp4"
-};
-
-const videoElem = document.getElementById('reactionVideo');
-const resetBtn = document.getElementById('resetBtn');
-const answerBtns = document.querySelectorAll('.answer-btn');
-
-function loadAndPlayVideo(videoPath) {
-    if (!videoPath || videoPath === "") {
-        alert("🎥 ՎԻԴԵՈՅԻ ՀՂՈՒՄԸ ԴԱՏԱՐԿ Է");
-        return;
+    // ՎԻԴԵՈՆԵՐԻ ՀԱՍՑԵՆԵՐԸ - ՓՈԽԻՐ ԱՅՍ ՏԵՂՈՒՄ
+    const VIDEO_URLS = {
+        yes: "hai_vd.mp4",
+        no: "che_vd.mp4",
+        crazy: "chgitem_vd.mp4"
+    };
+    
+    function loadAndPlayVideo(videoPath) {
+        console.log("Փորձում եմ բացել վիդեո:", videoPath);
+        
+        // Ստուգում ենք՝ արդյոք ֆայլը գոյություն ունի
+        fetch(videoPath, { method: 'HEAD' })
+            .then(response => {
+                if (!response.ok) {
+                    alert(❌ Վիդեոն չի գտնվել: ${videoPath}\n\nՍտուգիր, որ ֆայլը կա նույն պանակում, ինչ index.html-ը);
+                    console.error("Ֆայլը չկա:", videoPath);
+                } else {
+                    console.log("Ֆայլը գտնվել է, բացում եմ...");
+                    videoElem.innerHTML = <source src="${videoPath}" type="video/mp4">;
+                    videoElem.load();
+                    videoElem.play().catch(e => console.log("Չհաջողվեց ավտոմատ միացնել:", e));
+                }
+            })
+            .catch(err => {
+                alert(⚠️ Սխալ ֆայլը ստուգելիս: ${videoPath}\n\nՀնարավոր է ֆայլը չկա կամ հասցեն սխալ է);
+                console.error(err);
+            });
     }
-    videoElem.innerHTML = <source src="${videoPath}" type="video/mp4">;
-    videoElem.load();
-    videoElem.play().catch(e => console.log("Ավտոմատ միացումը արգելափակված է:", e));
-}
-
-function resetVideo() {
-    videoElem.innerHTML = '';
-    videoElem.load();
-}
-
-function handleAnswer(answerKey) {
-    let videoUrl = VIDEO_URLS[answerKey];
-    if (videoUrl) {
-        loadAndPlayVideo(videoUrl);
-    } else {
-        alert("🎥 ՎԻԴԵՈՆ ԴԵՌ ՉԻ ԱՎԵԼԱՑՎԵԼ");
+    
+    function resetVideo() {
+        videoElem.innerHTML = '';
+        videoElem.load();
+        console.log("Վիդեոն ռեզետացվել է");
     }
-}
-
-answerBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const answerVal = btn.getAttribute('data-answer');
-        handleAnswer(answerVal);
+    
+    function handleAnswer(answerKey) {
+        let videoUrl = VIDEO_URLS[answerKey];
+        console.log("Ընտրված պատասխան:", answerKey, "Վիդեոյի հասցե:", videoUrl);
+        
+        if (videoUrl) {
+            loadAndPlayVideo(videoUrl);
+        } else {
+            alert("🎥 ՎԻԴԵՈՆ ԴԵՌ ՉԻ ԱՎԵԼԱՑՎԵԼ");
+        }
+    }
+    
+    answerBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const answerVal = btn.getAttribute('data-answer');
+            handleAnswer(answerVal);
+        });
     });
-});
-
-resetBtn.addEventListener('click', () => {
+    
+    resetBtn.addEventListener('click', () => {
+        resetVideo();
+    });
+    
     resetVideo();
-});
-
-resetVideo();
 </script>
 </body>
 </html>
