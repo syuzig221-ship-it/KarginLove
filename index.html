@@ -151,95 +151,52 @@
     // ⚠️ ԱՅՍ ՏԵՂՈՒՄ ՏԵՂԱԴՐԵՔ ՁԵՐ ՎԻԴԵՈՆԵՐԻ ԱՆՈՒՆՆԵՐԸ ⚠️
     // =====================================================
     
-    const VIDEO_URLS = {
-        yes: "videos/hai_vd.mp4",
-        no: "videos/che_vd.mp4",
-        crazy: "videos/chgitem_vd.mp4"
-    };
-    
-    const videoElem = document.getElementById('reactionVideo');
-    const resetBtn = document.getElementById('resetBtn');
-    const answerBtns = document.querySelectorAll('.answer-btn');
-    
-    function loadAndPlayVideo(videoPath) {
-        if (!videoPath || videoPath === "") {
-           videoElem.innerHTML = `<source src="${videoPath}" type="video/mp4">`;;
-            videoElem.load();
-            alert("🎥 ՎԻԴԵՈՅԻ ՀՂՈՒՄԸ ԴԱՏԱՐԿ Է։\nԽնդրում եմ վերևի VIDEO_URLS-ում տեղադրեք ճիշտ հղումները (mp4):");
-            return;
-        }
-        const sourceElem = videoElem.querySelector('source');
-        if (sourceElem) {
-            sourceElem.src = videoPath;
-        } else {
-            const newSource = document.createElement('source');
-            newSource.src = videoPath;
-            newSource.type = "video/mp4";
-            videoElem.innerHTML = '';
-            videoElem.appendChild(newSource);
-        }
-        videoElem.load();
-        videoElem.play().catch(e => console.log("Ավտոմատ միացումը արգելափակված է, սեղմեք play:", e));
+const VIDEO_URLS = {
+    yes: "hai_vd.mp4",
+    no: "che_vd.mp4",
+    crazy: "chgitem_vd.mp4"
+};
+
+const videoElem = document.getElementById('reactionVideo');
+const resetBtn = document.getElementById('resetBtn');
+const answerBtns = document.querySelectorAll('.answer-btn');
+
+function loadAndPlayVideo(videoPath) {
+    if (!videoPath || videoPath === "") {
+        alert("🎥 ՎԻԴԵՈՅԻ ՀՂՈՒՄԸ ԴԱՏԱՐԿ Է");
+        return;
     }
-    
-    function resetVideo() {
-        const sourceElem = videoElem.querySelector('source');
-        if (sourceElem) {
-            sourceElem.src = "";
-        } else {
-            const blankSource = document.createElement('source');
-            blankSource.src = "";
-            blankSource.type = "video/mp4";
-            videoElem.innerHTML = '';
-            videoElem.appendChild(blankSource);
-        }
-        videoElem.load();
+    videoElem.innerHTML = <source src="${videoPath}" type="video/mp4">;
+    videoElem.load();
+    videoElem.play().catch(e => console.log("Ավտոմատ միացումը արգելափակված է:", e));
+}
+
+function resetVideo() {
+    videoElem.innerHTML = '';
+    videoElem.load();
+}
+
+function handleAnswer(answerKey) {
+    let videoUrl = VIDEO_URLS[answerKey];
+    if (videoUrl) {
+        loadAndPlayVideo(videoUrl);
+    } else {
+        alert("🎥 ՎԻԴԵՈՆ ԴԵՌ ՉԻ ԱՎԵԼԱՑՎԵԼ");
     }
-    
-    function handleAnswer(answerKey) {
-        let videoUrl = "";
-        if (answerKey === "yes") {
-            videoUrl = VIDEO_URLS.yes;
-        } else if (answerKey === "no") {
-            videoUrl = VIDEO_URLS.no;
-        } else if (answerKey === "crazy") {
-            videoUrl = VIDEO_URLS.crazy;
-        }
-        
-        if (videoUrl && videoUrl !== "") {
-            loadAndPlayVideo(videoUrl);
-        } else {
-            alert("🎥 ՎԻԴԵՈՆ ԴԵՌ ՉԻ ԱՎԵԼԱՑՎԵԼ։\nՏեղադրեք հղումը VIDEO_URLS-ում");
-        }
-    }
-    
-    answerBtns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const answerVal = btn.getAttribute('data-answer');
-            handleAnswer(answerVal);
-        });
+}
+
+answerBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const answerVal = btn.getAttribute('data-answer');
+        handleAnswer(answerVal);
     });
-    
-    resetBtn.addEventListener('click', () => {
-        resetVideo();
-        const tempMsg = document.createElement('div');
-        tempMsg.innerText = "✨ Նորից ընտրիր պատասխանը ✨";
-      tempMsg.style.position = 'fixed';
-        tempMsg.style.bottom = '20px';
-        tempMsg.style.left = '50%';
-        tempMsg.style.transform = 'translateX(-50%)';
-        tempMsg.style.background = '#2c2c2cdd';
-        tempMsg.style.color = 'white';
-        tempMsg.style.padding = '8px 18px';
-        tempMsg.style.borderRadius = '40px';
-        tempMsg.style.fontSize = '0.9rem';
-        tempMsg.style.zIndex = '999';
-        tempMsg.style.backdropFilter = 'blur(6px)';
-        document.body.appendChild(tempMsg);
-        setTimeout(() => { tempMsg.remove(); }, 1500);
-    });
-    
+});
+
+resetBtn.addEventListener('click', () => {
     resetVideo();
+});
+
+resetVideo();
 </script>
 </body>
 </html>
